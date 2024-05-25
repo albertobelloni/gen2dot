@@ -1,9 +1,26 @@
 #!/usr/bin/python3
 
+## @package makeJson
+#
+#  The gen2dot script produces decay-chain graphs reading PDG codes from the
+#  input files. The makeJson script provides the mapping between PDG codes
+#  and particle names, using the particle.Particle package. The mapping is
+#  saved in a gzipped JSON file. A copy of the generated JSON file is included
+#  in the repository, to spare users from the need to install the necessary
+#  dependency (particle.Particle); it is expected that the JSON file seldom
+#  needs to be updated.
+#  A special case that requires an update: the particle.Particle package
+#  assigns three strings to each particle: name, pdg_name, and latex_name.
+#  One may want to modify the main function below to choose a different
+#  string. Let it be noted that latex_name requires one to use dot2tex in
+#  gen2dot to generate a TEX file, to be processed with pdflatex.
+
 import argparse
 import gzip, json
 from particle import Particle
 
+##
+#  @return argparse object with user input via command-line options
 def parsed_args():
 
     parser = argparse.ArgumentParser(
@@ -16,6 +33,12 @@ def parsed_args():
                         default="pdgnames.json.gz")
     return parser.parse_args()
 
+##
+#  The workhorse: the dictionary generation and JSON file creation take place
+#  here. This is also where the user may want which type of string that
+#  identifies particles is written to the dictionary.
+#
+#  @param args command line options
 def main(args):
 
     dictionary = {}

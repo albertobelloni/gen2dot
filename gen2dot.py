@@ -2,22 +2,25 @@
 
 ## @package gen2dot
 #
-# A script to create figures from CMS NanoAOD files.
+#  A script to create graphs representing MC decay chains from various inputs,
+#  among which LHE files and CMS NanoAOD files.
 
-#import matplotlib
 import argparse
 import pydot
 import ROOT
 import gzip, json
 
-# Good, old global
+## @var particle_dict
+#  pdgID-name dictionary; this file is produced by the makeJson script,
+#  it is reasonable to expect that it does not need to be updated often...
 particle_dict = {}
 
+##
+#  @return argparse object with user input via command-line options
 def parsed_args():
 
     parser = argparse.ArgumentParser(
         description="""A script to create figures from CMS NanoAOD files.
-                       The input files may be gzipped.
                        Several options for the output format are available.
                        """)
     parser.add_argument("-m","--max-events",
@@ -36,10 +39,21 @@ def parsed_args():
                         choices=['png','pdf','svg','dot'],default="png")
     return parser.parse_args()
 
-## processFile
-#  @param input_filename Used to define the data extraction method
-#  @param output_filename Used to define the output type; if missing, assume interactive view of events
-#  @param max_events Defaults to 999 for interactive view
+##
+#
+#  This is the workhorse function: decides what type of input is provided,
+#  correspondingly selecting the correct read function, loops on the events
+#  found in the input file, transformed into a list of dictionaries (each
+#  dictionary correspond to a truth particle), sends individual events to
+#  the processEvent function, prints the returned DOT graph into a file,
+#  of the type defined by the user via a command-line option.
+#
+#  @param input_filename name of input file; its extension is used to define
+#                        the data extraction method
+#  @param output_pattern string used to define the name of the output files
+#  @param extension define type of output file (PDF, PNG, SVG, ...)
+#  @param max_events max number of graphs to produce, if enough events are
+#                    available in the input file
 def processFile(input_filename, output_pattern, extension, max_events):
 
     global particle_dict
@@ -68,7 +82,7 @@ def processFile(input_filename, output_pattern, extension, max_events):
 
     data = readFile(input_filename, max_events)
 
-    # This is a convolute way to check how many events are in the file
+    # This is a convoluted way to check how many events are in the file
     # Let me leave it here for debugging purposes
     processed_events = max(data, key=lambda event:event['event'])['event'] + 1
     print (f"Processed {processed_events}",
@@ -85,11 +99,9 @@ def processFile(input_filename, output_pattern, extension, max_events):
         # function returns a LIST of graphs; in our case, we know that
         # we are returning only one
         event_dot = processEvent(event_data)
-        event_graph = pydot.graph_from_dot_data(event_dot)[0]
+        (event_graph,) = pydot.graph_from_dot_data(event_dot)
         
-        # Now we have the graph in DOT language: if output_filename is empty,
-        # we will show it interactively (push button to move to next file -
-        # max_events reset to 999)
+        # Now we have the graph in DOT language: save it in the selected format
         if extension == 'png':
             event_graph.write_png(f"{output_pattern}{i}.png")
         if extension == 'pdf':
@@ -99,6 +111,14 @@ def processFile(input_filename, output_pattern, extension, max_events):
         if extension == 'dot':
             event_graph.write_raw(f"{output_pattern}{i}.dot")
 
+    print ("Done with task")
+
+##
+#
+#  @param input_filename text (CSV, LHE?) file containing events
+#  @param max_events max number of graphs to produce, if enough events
+#                    are available in the input file
+#  @return list of all particles read in multiple events in the input file
 def readFile_txt(input_filename, max_events):
 
     return [{"event":0, "particle":0, "pdg":22, "mother":-1,"status":3}]
@@ -106,6 +126,16 @@ def readFile_txt(input_filename, max_events):
 #        for line in file:
 #    return
 
+##
+#
+#  The current implementation works with NanoAODv21. This is the function
+#  where one defines the names of the columns in the ROOT tree corresponding
+#  to truth MC information.
+#
+#  @param input_filename ROOT file containing events
+#  @param max_events max number of graphs to produce, if enough events
+#                    are available in the input file
+#  @return list of all particles read in multiple events in the input file
 def readFile_root(input_filename, max_events):
 
     infile = ROOT.TFile(input_filename,"read")
@@ -142,6 +172,15 @@ def readFile_root(input_filename, max_events):
 
     return data
         
+## 
+#  This function receives a list of particles found in a single event,
+#  and produces a DOT graph object. This is where one may want to play
+#  with the format of the graph (e.g., style and color of nodes and edges),
+#  or the physics of what is being drawn (what to do with particles that
+#  do not have a parent?)
+#
+#  @param data list of particles (in dictionary format) found in one event
+#  @return graph corresponding to event decay chain, in DOT-string format
 def processEvent(data):
 
     global particle_dict
@@ -165,6 +204,8 @@ def processEvent(data):
 
     return graph.to_string()
 
+## 
+#  @param args command line options
 def main(args):
 
     input_filename = args.in_file

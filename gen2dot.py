@@ -8,6 +8,10 @@
 import argparse
 import pydot
 import ROOT
+import gzip, json
+
+# Good, old global
+particle_dict = {}
 
 def parsed_args():
 
@@ -38,11 +42,17 @@ def parsed_args():
 #  @param max_events Defaults to 999 for interactive view
 def processFile(input_filename, output_pattern, extension, max_events):
 
+    global particle_dict
+
     # If there is no output_filename, we will show the graphs interactively
     # I cannot imagine anyone wanting to look at more than 1000 graphs...
     if not output_pattern:
         max_events = 999
     
+    # Let us read the JSON file: I assume its name is fixed!
+    with gzip.open('pdgnames.json.gz','rt', encoding='ascii') as json_file:
+        particle_dict = json.load(json_file)
+
     # Depending on the extension of the input filename, we decide
     # how it should be read: NanoAOD? ROOT ntuple? CSV or TXT file?
     input_extension = input_filename.split('.')[-1]
@@ -102,7 +112,7 @@ def readFile_root(input_filename, max_events):
     tree = infile.Events
 
     entries = tree.GetEntriesFast()
-    print ("Entries: ", entries)
+    print ("Available entries in root tree: ", entries)
 
     n = 0
     data = []
@@ -122,9 +132,6 @@ def readFile_root(input_filename, max_events):
                          "mother":event.GenPart_genPartIdxMother[particle],
                          "status":event.GenPart_statusFlags[particle]
                          })
-            #print (n, " ", particle, " ",
-            #       event.GenPart_pdgId[particle], " ",
-            #       event.GenPart_genPartIdxMother[particle])
         n = n+1
         if n > max_events:
             return data
@@ -132,6 +139,8 @@ def readFile_root(input_filename, max_events):
     return data
         
 def processEvent(data):
+
+    global particle_dict
 
     print(f"Event {data[0]['event']}")
 
@@ -141,7 +150,7 @@ def processEvent(data):
     for particle in data:
         graph.add_node(pydot.Node(particle['particle'],
                                   shape="circle",
-                                  label=particle['pdg']))
+                                  label=particle_dict[str(particle['pdg'])]))
 
     # add edges between particles
     for particle in data:

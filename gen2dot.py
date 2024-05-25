@@ -61,11 +61,6 @@ def processFile(input_filename, output_pattern, extension, max_events):
 
     global particle_dict
 
-    # If there is no output_filename, we will show the graphs interactively
-    # I cannot imagine anyone wanting to look at more than 1000 graphs...
-    if not output_pattern:
-        max_events = 999
-    
     # Let us read the JSON file: I assume its name is fixed!
     with gzip.open('pdgnames.json.gz','rt', encoding='ascii') as json_file:
         particle_dict = json.load(json_file)

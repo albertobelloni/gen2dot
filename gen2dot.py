@@ -70,10 +70,11 @@ def processFile(input_filename, output_pattern, extension, max_events):
 
     # This is a convolute way to check how many events are in the file
     # Let me leave it here for debugging purposes
-    print (f"Processed {max(data, key=lambda event:event['event'])['event']}",
-           f" events; it had better be equal to {max_events}")
+    processed_events = max(data, key=lambda event:event['event'])['event'] + 1
+    print (f"Processed {processed_events}",
+           f"events; it had better be equal or smaller than {max_events}")
 
-    for i in range(max_events):
+    for i in range(processed_events):
 
         # Filter data list of dictionaries to keep only the ones that
         # have the same event key (equal to i: the MC event number is
@@ -98,8 +99,9 @@ def processFile(input_filename, output_pattern, extension, max_events):
         if extension == 'dot':
             event_graph.write_raw(f"{output_pattern}{i}.dot")
 
-#def readFile_txt(input_filename):
-#
+def readFile_txt(input_filename, max_events):
+
+    return [{"event":0, "particle":0, "pdg":22, "mother":-1,"status":3}]
 #    with open(input_filename, 'r') as file:
 #        for line in file:
 #    return
@@ -132,8 +134,10 @@ def readFile_root(input_filename, max_events):
                          "mother":event.GenPart_genPartIdxMother[particle],
                          "status":event.GenPart_statusFlags[particle]
                          })
+        # Exit the loop if either processed max_events, or no more entries
+        # are available in the tree
         n = n+1
-        if n > max_events:
+        if n >= max_events or n >= entries:
             return data
 
     return data

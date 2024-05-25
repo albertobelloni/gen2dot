@@ -3,7 +3,10 @@
 ## @package gen2dot
 #
 #  A script to create graphs representing MC decay chains from various inputs,
-#  among which LHE files and CMS NanoAOD files.
+#  among which text files and CMS NanoAOD files.
+#  The pylhe module offers a very nice way to produce graphs from LHE files;
+#  I shall leave in this macro the possibility of reading a plain text file,
+#  the user shall ensure that they define appropriately its format.
 
 import argparse
 import pydot
@@ -20,7 +23,8 @@ particle_dict = {}
 def parsed_args():
 
     parser = argparse.ArgumentParser(
-        description="""A script to create figures from CMS NanoAOD files.
+        description="""A script to create graphs from CMS NanoAOD files
+                       or text files.
                        Several options for the output format are available.
                        """)
     parser.add_argument("-m","--max-events",
@@ -40,7 +44,6 @@ def parsed_args():
     return parser.parse_args()
 
 ##
-#
 #  This is the workhorse function: decides what type of input is provided,
 #  correspondingly selecting the correct read function, loops on the events
 #  found in the input file, transformed into a list of dictionaries (each
@@ -114,8 +117,7 @@ def processFile(input_filename, output_pattern, extension, max_events):
     print ("Done with task")
 
 ##
-#
-#  @param input_filename text (CSV, LHE?) file containing events
+#  @param input_filename text file containing events
 #  @param max_events max number of graphs to produce, if enough events
 #                    are available in the input file
 #  @return list of all particles read in multiple events in the input file
@@ -127,7 +129,6 @@ def readFile_txt(input_filename, max_events):
 #    return
 
 ##
-#
 #  The current implementation works with NanoAODv21. This is the function
 #  where one defines the names of the columns in the ROOT tree corresponding
 #  to truth MC information.

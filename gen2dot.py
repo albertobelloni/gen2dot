@@ -81,7 +81,6 @@ def processFile(input_filename, output_pattern, extension, max_events):
     data = readFile(input_filename, max_events)
 
     # This is a convoluted way to check how many events are in the file
-    # Let me leave it here for debugging purposes
     processed_events = max(data, key=lambda event:event['event'])['event'] + 1
     print (f"Processed {processed_events}",
            f"events; it had better be equal or smaller than {max_events}")

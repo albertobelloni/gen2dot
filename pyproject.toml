@@ -13,7 +13,7 @@ authors = [
 maintainers = [
   { name = "Alberto Belloni", email = "alberto.belloni@cern.ch"}
 ]
-description = "Create DOT files from GEN files and LHE files"
+description = "Create PNG, PDF, SVG, DOT files from GEN files and LHE files"
 readme = { file = "README.md", content-type = "text/markdown" }
 classifiers = [
   "Programming Language :: Python :: 3.9"

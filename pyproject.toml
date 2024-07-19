@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gen2dot"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = ["ROOT >= 6.32.2", "pydot >= 2.0.0", "pylhe >= 0.8.0"]
 requires-python = ">= 3.9.18"
 authors = [

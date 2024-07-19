@@ -11,10 +11,12 @@
 import argparse
 import pydot
 import ROOT
+from importlib import resources
 import gzip, json
+import gen2dot
 
 ## @var particle_dict
-#  pdgID-name dictionary; this file is produced by the makeJson script,
+#  pdgID-name dictionary; this file is produced by the g2d_makejson script,
 #  it is reasonable to expect that it does not need to be updated often...
 particle_dict = {}
 
@@ -62,7 +64,8 @@ def processFile(input_filename, output_pattern, extension, max_events):
     global particle_dict
 
     # Let us read the JSON file: I assume its name is fixed!
-    with gzip.open('pdgnames.json.gz','rt', encoding='ascii') as json_file:
+    with gzip.open(resources.files(gen2dot).joinpath('pdgnames.json.gz'),
+                   'rt', encoding='ascii') as json_file:
         particle_dict = json.load(json_file)
 
     # Depending on the extension of the input filename, we decide

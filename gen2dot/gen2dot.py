@@ -199,9 +199,11 @@ def processEvent(data):
 
     return graph.to_string()
 
-## 
-#  @param args command line options
-def main(args):
+##
+#
+def main():
+
+    args = parsed_args()
 
     input_filename = args.in_file
     output_pattern = args.out_pattern
@@ -216,6 +218,6 @@ def main(args):
 if __name__ == '__main__':
 
     try:
-        main(parsed_args())
+        main()
     except KeyboardInterrupt:
         pass

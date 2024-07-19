@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gen2dot"
+version = "1.0.0"
+dependencies = ["ROOT >= 6.32.2", "pydot >= 2.0.0", "pylhe >= 0.8.0"]
+requires-python = ">= 3.9.18"
+authors = [
+  { name = "Alberto Belloni", email = "alberto.belloni@cern.ch"}
+]
+maintainers = [
+  { name = "Alberto Belloni", email = "alberto.belloni@cern.ch"}
+]
+description = "Create DOT files from GEN files and LHE files"
+readme = { file = "README.md", content-type = "text/markdown" }
+classifiers = [
+  "Programming Language :: Python :: 3.9"
+]
+
+[project.optional-dependencies]
+JSON = ["Particle"]
+
+[project.scripts]
+gen2dot      = "gen2dot.gen2dot:main"
+lhe2dot      = "gen2dot.lhe2dot:main"
+g2d_makejson = "gen2dot.makejson:main"
+
+[project.urls]
+Repository = "https://github.com/albertobelloni/gen2dot"
+
+[tool.setuptools]
+package-data = { "gen2dot" = ["pdgnames.json.gz"] }

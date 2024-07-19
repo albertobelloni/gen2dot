@@ -37,9 +37,9 @@ def parsed_args():
 #  The workhorse: the dictionary generation and JSON file creation take place
 #  here. This is also where the user may want which type of string that
 #  identifies particles is written to the dictionary.
-#
-#  @param args command line options
-def main(args):
+def main():
+
+    args = parsed_args()
 
     dictionary = {}
     for part in Particle.all():
@@ -55,6 +55,6 @@ def main(args):
 if __name__ == '__main__':
 
     try:
-        main(parsed_args())
+        main()
     except KeyboardInterrupt:
         pass

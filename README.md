@@ -1,5 +1,5 @@
 # gen2dot
-Convert GEN particle information to a Graphviz DOT file.
+Convert GEN particle information to a Graphviz DOT file and to PNG, PDF, SVG files.
 
 ## Installation
 
